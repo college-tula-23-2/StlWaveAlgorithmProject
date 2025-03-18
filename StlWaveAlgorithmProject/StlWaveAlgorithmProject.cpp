@@ -7,4 +7,6 @@ int main()
 {
     WaveAlgorithm wa;
     wa.SetMazeFileName();
+    wa.CreateMaze();
+    wa.ShowMaze();
 }

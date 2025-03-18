@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
+#include <iomanip>
 
 /*
 read txt map => create digit map
@@ -17,6 +18,22 @@ enum class CellType
 	Wall   = -2,
 	Start  = 0,
 	Finish = -3
+};
+
+enum class CharType
+{
+	Space  = ' ',
+	Wall   = '#',
+	Start  = 's',
+	Finish = 'f'
+};
+
+enum class MazeType
+{
+	Space = ' ',
+	Wall = 178,
+	Start = 'S',
+	Finish = 'F'
 };
 
 struct Cell
