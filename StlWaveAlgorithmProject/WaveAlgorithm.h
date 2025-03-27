@@ -40,7 +40,20 @@ struct Cell
 {
 	int row;
 	int column;
+
+	friend bool operator==(const Cell& left, const Cell& right)
+	{
+		return left.row == right.row && left.column == right.column;
+	}
+
+	friend std::ostream& operator<<(std::ostream& out, const Cell& cell)
+	{
+		out << "[" << cell.row << ", " << cell.column << "]";
+		return out;
+	}
 };
+
+
 
 typedef std::vector<std::vector<int>> Maze;
 typedef std::array<std::vector<Cell>, 2> Fronts;
@@ -50,14 +63,12 @@ typedef std::vector<Cell> Path;
 
 class WaveAlgorithm
 {
+	std::array<Cell, 4> offsets{ {{-1, 0}, {0, 1}, {1, 0}, {0, -1}} };
+
 	Maze maze;
 
 	Cell startCell;
 	Cell finishCell;
-
-	Fronts fronts;
-
-	bool currentFront{};
 
 	Path path;
 
@@ -66,9 +77,10 @@ class WaveAlgorithm
 public:
 	void SetMazeFileName();
 	void CreateMaze();
-	void MoveWave();
+	bool MoveWave();
 	void CreatePath();
 
 	void ShowMaze();
+	void ShowPath();
 };
 

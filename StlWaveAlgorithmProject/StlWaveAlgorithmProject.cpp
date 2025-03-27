@@ -9,4 +9,11 @@ int main()
     wa.SetMazeFileName();
     wa.CreateMaze();
     wa.ShowMaze();
+    std::cout << "\n";
+
+    wa.MoveWave();
+    wa.ShowMaze();
+    
+    wa.CreatePath();
+    wa.ShowPath();
 }

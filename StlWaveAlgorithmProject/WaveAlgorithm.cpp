@@ -52,9 +52,13 @@ void WaveAlgorithm::CreateMaze()
 				break;
 			case CharType::Start:
 				maze[indexLast].push_back((int)CellType::Start);
+				startCell.row = indexLast;
+				startCell.column = maze[indexLast].size() - 1;
 				break;
 			case CharType::Finish:
 				maze[indexLast].push_back((int)CellType::Finish);
+				finishCell.row = indexLast;
+				finishCell.column = maze[indexLast].size() - 1;
 				break;
 			default:
 				break;
@@ -63,14 +67,78 @@ void WaveAlgorithm::CreateMaze()
 	}
 
 	inFileStream.close();
+}
 
-	/*std::cout << "\n";
-	for (auto v : maze)
+bool WaveAlgorithm::MoveWave()
+{
+	Fronts fronts;
+	bool isFinish{};
+	bool currentFront{};
+
+	fronts[currentFront].push_back(startCell);
+	int currentNumber{};
+
+	while (true)
 	{
-		for (auto item : v)
-			std::cout << std::setw(2) << item;
-		std::cout << "\n";
-	}*/
+		currentNumber++;
+		fronts[!currentFront].clear();
+
+		for (auto frontCell : fronts[currentFront])
+		{
+			for (auto offset : offsets)
+			{
+				Cell candidat{ frontCell.row + offset.row,
+								frontCell.column + offset.column };
+
+				if (maze[candidat.row][candidat.column] == (int)CellType::Space ||
+					maze[candidat.row][candidat.column] == (int)CellType::Finish)
+				{
+					maze[candidat.row][candidat.column] = currentNumber;
+					fronts[!currentFront].push_back(candidat);
+				}
+
+				if (candidat == finishCell)
+				{
+					isFinish = true;
+					break;
+				}
+			}
+			if (isFinish) break;
+		}
+		if (isFinish) break;
+
+		if (!fronts[!currentFront].size())
+			break;
+
+		currentFront = !currentFront;
+	}
+
+	return isFinish;
+}
+
+void WaveAlgorithm::CreatePath()
+{
+	path.push_back(finishCell);
+
+	int currentNumber = maze[finishCell.row][finishCell.column];
+
+	while (currentNumber)
+	{
+		Cell currentCell = path[path.size() - 1];
+		for (auto offset : offsets)
+		{
+			Cell candidat{ currentCell.row + offset.row,
+						   currentCell.column + offset.column };
+			if (maze[candidat.row][candidat.column] == currentNumber - 1)
+			{
+				path.push_back(candidat);
+				break;
+			}
+		}
+		currentNumber--;
+	}
+
+	std::reverse(path.begin(), path.end());
 }
 
 void WaveAlgorithm::ShowMaze()
@@ -83,21 +151,31 @@ void WaveAlgorithm::ShowMaze()
 			switch (item)
 			{
 			case CellType::Space:
-				std::cout << (char)MazeType::Space;
+				std::cout << (char)MazeType::Space
+						  << (char)MazeType::Space;
 				break;
 			case CellType::Wall:
-				std::cout << (char)MazeType::Wall;
+				std::cout << (char)MazeType::Wall
+						  << (char)MazeType::Wall;
 				break;
 			case CellType::Start:
-				std::cout << (char)MazeType::Start;
+				std::cout << std::setw(2) << (char)MazeType::Start;
 				break;
 			case CellType::Finish:
-				std::cout << (char)MazeType::Finish;
+				std::cout << std::setw(2) << (char)MazeType::Finish;
 				break;
 			default:
-				break;
+				std::cout << std::setw(2) << i;
 			}
 		}
 		std::cout << "\n";
 	}
+}
+
+void WaveAlgorithm::ShowPath()
+{
+	std::cout << "\n";
+	for (auto cell : path)
+		std::cout << cell << " | ";
+	std::cout << "\n";
 }
